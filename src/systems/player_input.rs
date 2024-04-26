@@ -33,7 +33,7 @@ pub fn player_input_system(
                     break;
                 }
             }
-            
+
             if !hit_something {
                 did_something = true;
                 player_cmd.insert(WantsToMove { destination: player_destination });

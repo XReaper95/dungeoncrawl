@@ -1,21 +1,16 @@
 use crate::prelude::*;
 
 pub fn spawn_player(ecs: &mut World, pos: Point) {
-    ecs.spawn(
-        (
-            Player,
-            pos,
-            Render {
-                color: ColorPair::new(WHITE, BLACK),
-                glyph: to_cp437('@'),
-            },
-            Health {
-                current: 10,
-                max: 10,
-            },
-            Name(String::from("The Player")),
-        )
-    );
+    ecs.spawn(PlayerBundle {
+        marker: Player,
+        name: Name(String::from("The Player")),
+        position: pos,
+        render_data: Render {
+            color: ColorPair::new(WHITE, BLACK),
+            glyph: to_cp437('@'),
+        },
+        health: Health::new(10),
+    });
 }
 
 pub fn spawn_monster(
@@ -23,27 +18,19 @@ pub fn spawn_monster(
     rng: &mut RandomNumberGenerator,
     pos: Point,
 ) {
-    let (hp, name, glyph) = match rng.roll_dice(1,10) {
+    let (hp, name, glyph) = match rng.roll_dice(1, 10) {
         1..=8 => goblin(),
         _ => orc()
     };
 
-    ecs.spawn(
-        (
-            Enemy,
-            pos,
-            Render {
-                color: ColorPair::new(WHITE, BLACK),
-                glyph,
-            },
-            ChasingPlayer {},
-            Health {
-                current: hp,
-                max: hp,
-            },
-            Name(name),
-        )
-    );
+    ecs.spawn(EnemyBundle {
+        marker: Enemy,
+        name: Name(name),
+        position: pos,
+        render_data: Render { color: ColorPair::new(WHITE, BLACK), glyph },
+        health: Health::new(hp),
+        chases_player: ChasingPlayer,
+    });
 }
 
 fn goblin() -> (i32, String, FontCharType) {
@@ -54,15 +41,15 @@ fn orc() -> (i32, String, FontCharType) {
     (2, "Orc".to_string(), to_cp437('o'))
 }
 
-pub fn spawn_amulet_of_yala(ecs : &mut World, pos : Point) {
-    ecs.spawn(
-        (Item, AmuletOfYala,
-         pos,
-         Render{
-             color: ColorPair::new(WHITE, BLACK),
-             glyph : to_cp437('|')
-         },
-         Name("Amulet of Yala".to_string())
-        )
-    );
+pub fn spawn_amulet_of_yala(ecs: &mut World, pos: Point) {
+    ecs.spawn(AmuletBundle {
+        marker: AmuletOfYala,
+        item_marker: Item,
+        name: Name("Amulet of Yala".to_string()),
+        position: pos,
+        render_data: Render {
+            color: ColorPair::new(WHITE, BLACK),
+            glyph: to_cp437('|'),
+        }
+    });
 }

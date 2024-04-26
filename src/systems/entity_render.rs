@@ -7,10 +7,10 @@ pub fn entity_render_system(
     let mut draw_batch = DrawBatch::new();
     draw_batch.target(1);
     let offset = Point::new(camera.left_x, camera.top_y);
-    
+
     for (position, render) in &renderables_query {
         draw_batch.set(*position - offset, render.color, render.glyph);
     }
- 
+
     draw_batch.submit(5000).expect("Batch error");
 }

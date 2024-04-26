@@ -1,46 +1,44 @@
 pub use crate::prelude::*;
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Component)]
 pub struct Render {
     pub color : ColorPair,
     pub glyph : FontCharType
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Component)]
 pub struct Player;
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Component)]
 pub struct Enemy;
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Component)]
 pub struct MovingRandomly;
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Component)]
 pub struct WantsToMove {
-    pub entity : Entity,
     pub destination : Point
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Component)]
 pub struct WantsToAttack {
-    pub attacker : Entity,
     pub victim : Entity
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Component)]
 pub struct Health {
     pub current: i32,
     pub max: i32
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Component)]
 pub struct Name(pub String);
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Component)]
 pub struct ChasingPlayer;
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Component)]
 pub struct Item;
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Component)]
 pub struct AmuletOfYala;

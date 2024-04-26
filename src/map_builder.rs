@@ -86,7 +86,7 @@ impl MapBuilder {
             };
 
             if let Some(idx) = self.map.try_idx(new_point) {
-                self.map.tiles[idx as usize] = TileType::Floor;
+                self.map.tiles[idx] = TileType::Floor;
             }
         }
     }

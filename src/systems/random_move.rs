@@ -1,43 +1,28 @@
 use crate::prelude::*;
 
-#[system]
-#[read_component(Point)]
-#[read_component(MovingRandomly)]
-#[read_component(Health)]
-#[read_component(Player)]
-pub fn random_move(ecs: &SubWorld, commands: &mut CommandBuffer) {
-    let mut movers = <(Entity, &Point, &MovingRandomly)>::query();
-    let mut positions = <(Entity, &Point, &Health)>::query();
-    movers.iter(ecs).for_each(| (entity, pos, _) | {
+pub fn random_move_system(
+    mut commands: Commands,
+    movers_query: Query<(Entity, &Point), (With<MovingRandomly>, Without<Player>, Without<ChasingPlayer>)>,
+    player_query: Query<(Entity, &Point), With<Player>>,
+) {
+    let (player_entity, player_position) = player_query.single();
+
+    for (entity, position) in &movers_query {
         let mut rng = RandomNumberGenerator::new();
-        let destination = match rng.range(0, 4) {
+
+        let destination: Point = match rng.range(0, 4) {
             0 => Point::new(-1, 0),
             1 => Point::new(1, 0),
             2 => Point::new(0, -1),
             _ => Point::new(0, 1),
-        } + *pos;
+        } + *position;
 
-        let mut attacked = false;
-        positions
-            .iter(ecs)
-            .filter(|(_, target_pos, _)| **target_pos == destination)
-            .for_each(|(victim, _, _)| {
-                if ecs.entry_ref(*victim)
-                    .unwrap().get_component::<Player>().is_ok()
-                {
-                    commands
-                        .push(((), WantsToAttack{
-                            attacker: *entity,
-                            victim: *victim
-                        }));
-                }
-                attacked = true;
-            }
-            );
+        let mut entity_cmd = commands.entity(entity);
 
-        if !attacked {
-            commands
-                .push(((), WantsToMove{ entity: *entity, destination }));
+        if destination == (*player_position).into() {
+            entity_cmd.insert(WantsToAttack { victim: player_entity });
+        } else {
+            entity_cmd.insert(WantsToMove { destination });
         }
-    });
+    }
 }

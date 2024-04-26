@@ -1,7 +1,9 @@
 use crate::prelude::*;
 
-#[system]
-pub fn map_render(#[resource] map: &Map, #[resource] camera: &Camera) {
+pub fn map_render_system(
+    map: Res<Map>, 
+    camera: Res<Camera>
+) {
     let mut draw_batch = DrawBatch::new();
     draw_batch.target(0);
     for y in camera.top_y ..= camera.bottom_y {

@@ -1,75 +1,50 @@
 use crate::prelude::*;
 
-#[system]
-#[read_component(Point)]
-#[read_component(Player)]
-#[read_component(Enemy)]
-#[write_component(Health)]
-pub fn player_input(
-    ecs: &mut SubWorld,
-    commands: &mut CommandBuffer,
-    #[resource] key: &Option<VirtualKeyCode>,
-    #[resource] turn_state: &mut TurnState
+pub fn player_input_system(
+    mut commands: Commands,
+    mut event_reader: EventReader<KeyEvent>,
+    mut turn_state: ResMut<TurnState>,
+    mut player_query: Query<(Entity, &Point, &mut Health), With<Player>>,
+    enemies_query: Query<(Entity, &Point), With<Enemy>>,
 ) {
-    let mut players = <(Entity, &Point)>::query().filter(component::<Player>());
-
-    if let Some(key) = *key {
-        let delta = match key {
-            VirtualKeyCode::Left => Point::new(-1, 0),
-            VirtualKeyCode::Right => Point::new(1, 0),
-            VirtualKeyCode::Up => Point::new(0, -1),
-            VirtualKeyCode::Down => Point::new(0, 1),
+    for key_event in event_reader.read() {
+        let delta = match key_event.key_code {
+            VirtualKeyCode::H => Point::new(-1, 0),
+            VirtualKeyCode::L => Point::new(1, 0),
+            VirtualKeyCode::K => Point::new(0, -1),
+            VirtualKeyCode::J => Point::new(0, 1),
             _ => Point::new(0, 0),
         };
 
-        let (player_entity, destination) = players
-            .iter(ecs)
-            .map(|(entity, pos)| (*entity, *pos + delta)).next()
-            .unwrap();
+        let (player, player_position, mut player_health) = player_query.single_mut();
+        let mut player_cmd = commands.entity(player);
 
         let mut did_something = false;
-        let mut enemies = <(Entity, &Point)>::query().filter(component::<Enemy>());
-        if delta.x !=0 || delta.y != 0 {
+        if delta.x != 0 || delta.y != 0 {
+            let player_destination = *player_position + delta;
             let mut hit_something = false;
-            enemies
-                .iter(ecs)
-                .filter(|(_, pos)| {
-                    **pos == destination
-                })
-                .for_each(|(entity, _) | {
+
+            for (enemy, enemy_position) in &enemies_query {
+                if player_destination == *enemy_position {
                     hit_something = true;
                     did_something = true;
 
-                    commands
-                        .push(
-
-                            ((), WantsToAttack{
-                            attacker: player_entity,
-                            victim: *entity,
-                        }));
-                });
-
+                    player_cmd.insert(WantsToAttack { victim: enemy });
+                    break;
+                }
+            }
+            
             if !hit_something {
                 did_something = true;
-
-                commands
-                    .push(((), WantsToMove{
-                        entity: player_entity,
-                        destination
-                    }));
+                player_cmd.insert(WantsToMove { destination: player_destination });
             }
         }
 
         if !did_something {
-            if let Ok(mut health) = ecs
-                .entry_mut(player_entity)
-                .unwrap()
-                .get_component_mut::<Health>()
-            {
-                health.current = i32::min(health.max, health.current+1);
-            }
+            player_health.current = i32::min(player_health.max, player_health.current + 1);
         }
 
         *turn_state = TurnState::PlayerTurn;
     }
 }
+

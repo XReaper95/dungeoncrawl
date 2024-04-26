@@ -1,33 +1,22 @@
 use crate::prelude::*;
 
-#[system]
-#[read_component(WantsToAttack)]
-#[read_component(Player)]
-#[write_component(Health)]
-pub fn combat(ecs: &mut SubWorld, commands: &mut CommandBuffer) {
-    let mut attackers = <(Entity, &WantsToAttack)>::query();
-    let victims : Vec<(Entity, Entity)> = attackers
-        .iter(ecs)
-        .map(|(entity, attack)| (*entity, attack.victim) )
-        .collect();
-
-    victims.iter().for_each(|(message, victim)| {
-        let is_player = ecs
-            .entry_ref(*victim)
-            .unwrap()
-            .get_component::<Player>()
-            .is_ok();
-
-        if let Ok(mut health) = ecs
-            .entry_mut(*victim)
-            .unwrap()
-            .get_component_mut::<Health>()
-        {
+pub fn combat_system(
+    mut commands: Commands,
+    attackers_query: Query<(Entity, &WantsToAttack)>,
+    player_query: Query<Entity, With<Player>>,
+    mut possible_victims_query: Query<&mut Health>
+) {
+    let player = player_query.single();
+    
+    for (attacker, attack) in &attackers_query {
+        if let Ok(mut health) = possible_victims_query.get_mut(attack.victim) {
             health.current -= 1;
-            if health.current < 1 && !is_player {
-                commands.remove(*victim);
+            
+            if health.current < 1 && attack.victim != player {
+                commands.entity(attack.victim).despawn();
             }
         }
-        commands.remove(*message);
-    });
+
+        commands.entity(attacker).remove::<WantsToAttack>();
+    }
 }

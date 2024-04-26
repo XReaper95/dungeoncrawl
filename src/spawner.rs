@@ -1,7 +1,7 @@
 use crate::prelude::*;
 
 pub fn spawn_player(ecs: &mut World, pos: Point) {
-    ecs.push(
+    ecs.spawn(
         (
             Player,
             pos,
@@ -28,7 +28,7 @@ pub fn spawn_monster(
         _ => orc()
     };
 
-    ecs.push(
+    ecs.spawn(
         (
             Enemy,
             pos,
@@ -55,7 +55,7 @@ fn orc() -> (i32, String, FontCharType) {
 }
 
 pub fn spawn_amulet_of_yala(ecs : &mut World, pos : Point) {
-    ecs.push(
+    ecs.spawn(
         (Item, AmuletOfYala,
          pos,
          Render{

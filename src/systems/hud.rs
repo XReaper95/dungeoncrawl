@@ -1,14 +1,9 @@
 use crate::prelude::*;
 
-#[system]
-#[read_component(Health)]
-#[read_component(Player)]
-pub fn hud(ecs: &SubWorld) {
-    let mut health_query =
-        <&Health>::query().filter(component::<Player>());
-    let player_health = health_query
-        .iter(ecs).next() // same as .nth(0)
-        .unwrap();
+pub fn hud_system(
+    player_health_query: Query<&Health, With<Player>>
+) {
+    let player_health = player_health_query.single();
 
     let mut draw_batch = DrawBatch::new();
     draw_batch.target(2);

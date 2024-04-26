@@ -1,13 +1,10 @@
 use crate::prelude::*;
 
-#[system]
-#[read_component(Health)]
-#[read_component(Player)]
-pub fn end_turn(
-    ecs: &SubWorld,
-    #[resource] turn_state: &mut TurnState
+pub fn end_turn_system(
+    mut turn_state: ResMut<TurnState>,
+    player_hp_query: Query<&Health, With<Player>>
 ) {
-    let mut player_hp = <&Health>::query().filter(component::<Player>());
+    let player_hp = player_hp_query.single();
     let current_state = *turn_state;
     let mut new_state = match current_state {
         TurnState::AwaitingInput => return,
@@ -16,11 +13,9 @@ pub fn end_turn(
         _ => current_state
     };
 
-    player_hp.iter(ecs).for_each(|hp| {
-        if hp.current < 1 {
-            new_state = TurnState::GameOver;
-        }
-    });
+    if player_hp.current < 1 {
+        new_state = TurnState::GameOver;
+    }
 
     *turn_state = new_state;
 }

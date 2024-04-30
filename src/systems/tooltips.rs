@@ -4,11 +4,7 @@ use crate::prelude::*;
 #[read_component(Point)]
 #[read_component(Name)]
 #[read_component(Health)]
-pub fn tooltips(
-    ecs: &SubWorld,
-    #[resource] mouse_pos: &Point,
-    #[resource] camera: &Camera
-) {
+pub fn tooltips(ecs: &SubWorld, #[resource] mouse_pos: &Point, #[resource] camera: &Camera) {
     let mut positions = <(Entity, &Point, &Name)>::query();
     let offset = Point::new(camera.left_x, camera.top_y);
     let map_pos = *mouse_pos + offset;
@@ -16,10 +12,11 @@ pub fn tooltips(
     draw_batch.target(2);
     positions
         .iter(ecs)
-        .filter(|(_, pos, _)| **pos == map_pos )
-        .for_each(|(entity, _, name) | {
+        .filter(|(_, pos, _)| **pos == map_pos)
+        .for_each(|(entity, _, name)| {
             let screen_pos = *mouse_pos * 4;
-            let display = if let Ok(health) = ecs.entry_ref(*entity)// (7)
+            let display = if let Ok(health) = ecs
+                .entry_ref(*entity) // (7)
                 .unwrap()
                 .get_component::<Health>()
             {

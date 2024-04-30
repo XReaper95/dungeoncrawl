@@ -13,21 +13,20 @@ pub fn spawn_player(ecs: &mut World, pos: Point) {
     });
 }
 
-pub fn spawn_monster(
-    ecs: &mut World,
-    rng: &mut RandomNumberGenerator,
-    pos: Point,
-) {
+pub fn spawn_monster(ecs: &mut World, rng: &mut RandomNumberGenerator, pos: Point) {
     let (hp, name, glyph) = match rng.roll_dice(1, 10) {
         1..=8 => goblin(),
-        _ => orc()
+        _ => orc(),
     };
 
     ecs.spawn(EnemyBundle {
         marker: Enemy,
         name: Name(name),
         position: pos.into(),
-        render_data: Render { color: ColorPair::new(WHITE, BLACK), glyph },
+        render_data: Render {
+            color: ColorPair::new(WHITE, BLACK),
+            glyph,
+        },
         health: Health::new(hp),
         chases_player: ChasingPlayer,
     });
@@ -50,6 +49,6 @@ pub fn spawn_amulet_of_yala(ecs: &mut World, pos: Point) {
         render_data: Render {
             color: ColorPair::new(WHITE, BLACK),
             glyph: to_cp437('|'),
-        }
+        },
     });
 }

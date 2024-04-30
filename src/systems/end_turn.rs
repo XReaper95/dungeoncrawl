@@ -2,7 +2,7 @@ use crate::prelude::*;
 
 pub fn end_turn_system(
     mut turn_state: ResMut<TurnState>,
-    player_hp_query: Query<&Health, With<Player>>
+    player_hp_query: Query<&Health, With<Player>>,
 ) {
     let player_hp = player_hp_query.single();
     let current_state = *turn_state;
@@ -10,7 +10,7 @@ pub fn end_turn_system(
         TurnState::AwaitingInput => return,
         TurnState::PlayerTurn => TurnState::MonsterTurn,
         TurnState::MonsterTurn => TurnState::AwaitingInput,
-        _ => current_state
+        _ => current_state,
     };
 
     if player_hp.current < 1 {

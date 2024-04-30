@@ -1,10 +1,11 @@
 use bevy_derive::Deref;
+
 pub use crate::prelude::*;
 
 #[derive(Component)]
 pub struct Render {
-    pub color : ColorPair,
-    pub glyph : FontCharType
+    pub color: ColorPair,
+    pub glyph: FontCharType,
 }
 
 #[derive(Component)]
@@ -30,25 +31,25 @@ pub struct MousePosition(pub Point);
 
 #[derive(Component)]
 pub struct WantsToMove<T: Into<Position> = Point> {
-    pub destination : T
+    pub destination: T,
 }
 
 #[derive(Component)]
 pub struct WantsToAttack {
-    pub victim : Entity
+    pub victim: Entity,
 }
 
 #[derive(Component)]
 pub struct Health {
     pub current: i32,
-    pub max: i32
+    pub max: i32,
 }
 
 impl Health {
     pub fn new(initial_value: i32) -> Self {
         Self {
             current: initial_value,
-            max: initial_value
+            max: initial_value,
         }
     }
 }

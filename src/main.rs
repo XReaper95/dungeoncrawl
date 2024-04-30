@@ -5,6 +5,7 @@ mod camera;
 mod spawner;
 mod systems;
 mod turn_state;
+mod utils;
 
 mod prelude {
     pub use bracket_lib::prelude::*;
@@ -114,7 +115,7 @@ impl GameState for State {
         }
 
         ctx.set_active_console(0);
-        self.ecs.insert_resource(Point::from_tuple(ctx.mouse_pos()));
+        self.ecs.insert_resource(MousePosition(Point::from_tuple(ctx.mouse_pos())));
 
         let current_state = *self.ecs.get_resource::<TurnState>().unwrap();
         match current_state {

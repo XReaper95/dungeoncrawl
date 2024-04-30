@@ -1,11 +1,12 @@
 use crate::prelude::*;
+use crate::utils;
 
 pub fn chasing_system(
     mut command: Commands,
     map: Res<Map>,
-    chasers_query: Query<(Entity, &Point), (With<ChasingPlayer>, Without<MovingRandomly>)>,
-    player_query: Query<(Entity, &Point), With<Player>>,
-    positions_query: Query<(Entity, &Point), With<Health>>
+    chasers_query: Query<(Entity, &Position), (With<ChasingPlayer>, Without<MovingRandomly>)>,
+    player_query: Query<(Entity, &Position), With<Player>>,
+    positions_query: Query<(Entity, &Position), With<Health>>
 ) {
     let (player, player_pos) = player_query.single();
     let player_idx = map_idx(player_pos.x, player_pos.y);
@@ -24,21 +25,16 @@ pub fn chasing_system(
         if let Some(exit_position) = DijkstraMap::find_lowest_exit(
             &dijkstra_map, idx, &*map
         ){
-            let distance = DistanceAlg::Pythagoras.distance2d(*chaser_pos, *player_pos);
+            let distance = DistanceAlg::Pythagoras.distance2d(chaser_pos.0, player_pos.0);
             let destination = if distance > 1.2 {
                 map.index_to_point2d(exit_position)
             } else {
-                *player_pos
+                player_pos.0
             };
-
-            // locations can only have a single entity
-            let at_destination = positions_query.iter().filter_map(
-                |(entt, pos)| if *pos == destination { Some(entt) } else { None }
-            ).next();
 
             let mut chaser_cmd = command.entity(chaser);
 
-            if let Some(entity) = at_destination {
+            if let Some(entity) = utils::get_entity_at_destination(&positions_query, destination) {
                 if entity == player{
                     chaser_cmd.insert(WantsToAttack { victim: player });
                 }

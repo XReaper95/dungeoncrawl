@@ -11,8 +11,8 @@ pub fn movement_system(
         let mut entity_cmds = commands.entity(entity);
 
         if map.can_enter_tile(want_move.destination) {
-            entity_cmds.insert(want_move.destination);
-            
+            entity_cmds.insert(Position(want_move.destination));
+
             if entity == player_entity_query.single() {
                 camera.on_player_move(want_move.destination)
             }

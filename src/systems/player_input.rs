@@ -4,8 +4,8 @@ pub fn player_input_system(
     mut commands: Commands,
     mut event_reader: EventReader<KeyEvent>,
     mut turn_state: ResMut<TurnState>,
-    mut player_query: Query<(Entity, &Point, &mut Health), With<Player>>,
-    enemies_query: Query<(Entity, &Point), With<Enemy>>,
+    mut player_query: Query<(Entity, &Position, &mut Health), With<Player>>,
+    enemies_query: Query<(Entity, &Position), With<Enemy>>,
 ) {
     for key_event in event_reader.read() {
         let delta = match key_event.key_code {
@@ -21,11 +21,11 @@ pub fn player_input_system(
 
         let mut did_something = false;
         if delta.x != 0 || delta.y != 0 {
-            let player_destination = *player_position + delta;
+            let player_destination = player_position.0 + delta;
             let mut hit_something = false;
 
             for (enemy, enemy_position) in &enemies_query {
-                if player_destination == *enemy_position {
+                if player_destination == enemy_position.0 {
                     hit_something = true;
                     did_something = true;
 

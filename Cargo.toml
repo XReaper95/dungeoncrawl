@@ -7,6 +7,7 @@ edition = "2021"
 
 [dependencies]
 bevy_ecs = "0.13.2"
+bevy_derive = "0.13.2"
 
 [dependencies.bracket-lib]
 git = "https://github.com/XReaper95/bracket-lib.git"

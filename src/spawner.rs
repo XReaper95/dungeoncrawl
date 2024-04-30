@@ -4,7 +4,7 @@ pub fn spawn_player(ecs: &mut World, pos: Point) {
     ecs.spawn(PlayerBundle {
         marker: Player,
         name: Name(String::from("The Player")),
-        position: pos,
+        position: pos.into(),
         render_data: Render {
             color: ColorPair::new(WHITE, BLACK),
             glyph: to_cp437('@'),
@@ -26,7 +26,7 @@ pub fn spawn_monster(
     ecs.spawn(EnemyBundle {
         marker: Enemy,
         name: Name(name),
-        position: pos,
+        position: pos.into(),
         render_data: Render { color: ColorPair::new(WHITE, BLACK), glyph },
         health: Health::new(hp),
         chases_player: ChasingPlayer,
@@ -46,7 +46,7 @@ pub fn spawn_amulet_of_yala(ecs: &mut World, pos: Point) {
         marker: AmuletOfYala,
         item_marker: Item,
         name: Name("Amulet of Yala".to_string()),
-        position: pos,
+        position: pos.into(),
         render_data: Render {
             color: ColorPair::new(WHITE, BLACK),
             glyph: to_cp437('|'),

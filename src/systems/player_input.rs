@@ -14,11 +14,12 @@ pub fn player_input(
     let mut players = <(Entity, &Point)>::query().filter(component::<Player>());
 
     if let Some(key) = *key {
+        use VirtualKeyCode as Vkc;
         let delta = match key {
-            VirtualKeyCode::Left => Point::new(-1, 0),
-            VirtualKeyCode::Right => Point::new(1, 0),
-            VirtualKeyCode::Up => Point::new(0, -1),
-            VirtualKeyCode::Down => Point::new(0, 1),
+            Vkc::Left | Vkc::H => Point::new(-1, 0),
+            Vkc::Right | Vkc::L => Point::new(1, 0),
+            Vkc::Up | Vkc::K => Point::new(0, -1),
+            Vkc::Down | Vkc::J => Point::new(0, 1),
             _ => Point::new(0, 0),
         };
 
